@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { 
+  Animated,
   View, 
   Text,
   TextInput, 
@@ -21,16 +22,20 @@ const WorkoutScreen = ({ route }: Props) => {
     if (newExercise) {
       setExercises([...exercises, newExercise]);
       setNewExercise('');
-      console.log(exercises);
     }
   };
 
+  useEffect(() => {
+    console.log('exercises:', exercises);
+  }, [exercises]);
+
   const removeExercise = (indexToRemove: number) => {
-    const updatedExercises = [...exercises];
-    console.log(updatedExercises);
-    updatedExercises.splice(indexToRemove, 1);
-    console.log(updatedExercises);
-    setExercises(updatedExercises);
+    setExercises((prevExercises) => {
+      const updatedExercises = [...prevExercises];
+      updatedExercises.splice(indexToRemove, 1);
+      const temp = updatedExercises[0];
+      return updatedExercises;
+    });
   };
 
   return (

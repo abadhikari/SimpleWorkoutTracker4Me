@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { 
     View, 
     Animated, 
@@ -23,19 +23,17 @@ const ExerciseButton = ({ exercise, index, buttonWidth, removeExercise }: Exerci
     PanResponder.create({
       onMoveShouldSetPanResponder: () => true,
       onPanResponderMove: (event, gesture) => {
-        animatedValue.setValue({ x: gesture.dx, y: 0 }); // update only the Animated.ValueXY state of the current button
+        animatedValue.setValue({ x: gesture.dx, y: gesture.dy }); // update only the Animated.ValueXY state of the current button
       },
       onPanResponderRelease: (event, gesture) => {
-        if (gesture.dx < -75) {
+        Animated.spring(animatedValue, {
+          toValue: { x: 0, y: 0 },
+          useNativeDriver: false,
+        }).start();
+        if (gesture.dx < -100) {
           // Remove the exercise if the button is swiped left enough
           removeExercise(index); // remove the current button
-        } else {
-          // Return the button to its initial position
-          Animated.spring(animatedValue, {
-            toValue: { x: 0, y: 0 },
-            useNativeDriver: false,
-          }).start();
-        }
+        } 
       },
     }),
   );
@@ -53,7 +51,7 @@ const ExerciseButton = ({ exercise, index, buttonWidth, removeExercise }: Exerci
       <Animated.View
         style={[
           styles.exerciseButton,
-          { transform: [{ translateX: animatedValue.x }] },
+          { transform: [{ translateX: animatedValue.x }, {translateY: animatedValue.y}] },
         ]}
         {...panResponder.panHandlers}
         onLayout={handleLayout}
